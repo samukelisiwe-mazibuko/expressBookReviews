@@ -16,8 +16,8 @@ const authenticatedUser = (username, password) => {
 };
 
 // only registered users can login
+// Login route - should AUTHENTICATE, not register
 regd_users.post("/login", (req, res) => {
-
     const username = req.body.username;
     const password = req.body.password;
   
@@ -25,14 +25,16 @@ regd_users.post("/login", (req, res) => {
       return res.status(400).json({ message: "Username and password required" });
     }
   
-    if (users.some(u => u.username === username)) {
-      return res.status(409).json({ message: "User already exists" });
+    if (!authenticatedUser(username, password)) {
+      return res.status(403).json({ message: "Invalid credentials" });
     }
   
-    users.push({ username, password });
+    const token = jwt.sign({ username }, "fingerprint_customer", { expiresIn: "1h" });
   
-    return res.status(200).json({ message: "User registered successfully" });
-});
+    req.session.authorization = { accessToken: token, username };
+  
+    return res.status(200).json({ message: "User successfully logged in", token });
+  });
 
 // Add or modify a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
@@ -66,7 +68,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
   }
 
   return res.status(200).json({
-    message: "Review deleted successfully"
+    message: `Review for ISBN ${isbn} deleted`
   });
 });
 

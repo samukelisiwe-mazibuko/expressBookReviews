@@ -16,7 +16,7 @@ app.use("/customer/auth/*", function auth(req, res, next) {
   
       let token = req.session.authorization['accessToken'];
   
-      jwt.verify(token, "access", (err, decoded) => {
+      jwt.verify(token, "fingerprint_customer", (err, decoded) => {
         if (err) {
           return res.status(403).json({
             message: "User not authenticated"
