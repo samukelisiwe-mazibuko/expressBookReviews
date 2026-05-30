@@ -1,0 +1,2 @@
+curl -b cookies.txt -X PUT "http://localhost:5000/customer/auth/review/1?review=ExcellentBook"
+{"message":"Review added/modified successfully","reviews":{"sam2":"ExcellentBook"}}
